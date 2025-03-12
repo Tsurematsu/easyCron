@@ -1,34 +1,34 @@
-import dotenv from 'dotenv';
-import EasyCron from "./EasyCron.js";
-dotenv.config();
-const secretKey = process.env.SECRET;
-const cronObjet = new EasyCron(secretKey, 'https://www.webpagetest.org/');
+import express, { json } from 'express';
 
-const jobQuery = {
-    username: "admin",
-    password: "admin",
-    secret: "secret",
-    action: "click",
-}
-const jobTime = "0 9 * * *";
+const app = express();
+const port = 3000;
 
-// cronObjet.makeCronJob(jobQuery, jobTime).then((response) => {
-//     console.log(response);
-// })
+app.use(json());
 
+const authMiddleware = (req, res, next) => {
+    const { usuario, contrasena } = req.body;
+    if (usuario === 'adminTemporal' && contrasena === 'passwordTemporal') {
+        next();
+    } else {
+        res.status(401).send('Unauthorized');
+    }
+};
 
-cronObjet.getCronJobs().then((cron_jobs) => {
-    console.log(cron_jobs);
-    // @ts-ignore
-    const cronJobId = cron_jobs[0].cron_job_id;
+app.post('/create', authMiddleware, (req, res) => {
+    // Lógica para crear un recurso
+    res.send('Recurso creado');
+});
 
+app.put('/update', authMiddleware, (req, res) => {
+    // Lógica para actualizar un recurso
+    res.send('Recurso actualizado');
+});
 
-    // @ts-ignore
-    // cronObjet.updateCronJob(cronJobId, jobQuery, "0 8 * * *").then((response) => {
-    //     console.log(response);
-    // })
+app.delete('/delete', authMiddleware, (req, res) => {
+    // Lógica para eliminar un recurso
+    res.send('Recurso eliminado');
+});
 
-    // cronObjet.deleteCronJob(cronJobId).then((response) => {
-    //     console.log(response);
-    // })
-})
+app.listen(port, () => {
+    console.log(`API escuchando en http://localhost:${port}`);
+});
