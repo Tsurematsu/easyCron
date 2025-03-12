@@ -23,6 +23,9 @@ export default new class Lib {
         const job = jobs[index];
         return await cronObjet.deleteCronJob(job.cron_job_id);
     }
+    async delete_id(id) {
+        return await cronObjet.deleteCronJob(id);
+    }
     async list() {
         return await cronObjet.getCronJobs()
     }
